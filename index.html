@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Me — Self Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@100;200;300;400;500;600;700&family=Nunito:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ===================== CSS VARIABLES ===================== */
+:root {
+  --bg: #f5f5f7;
+  --bg2: #ffffff;
+  --bg3: rgba(255,255,255,0.6);
+  --text: #1d1d1f;
+  --text2: #6e6e73;
+  --text3: #86868b;
+  --accent: #0071e3;
+  --accent2: #147ce5;
+  --glass: rgba(255,255,255,0.45);
+  --glass-border: rgba(255,255,255,0.6);
+  --glass-shadow: rgba(0,0,0,0.08);
+  --nav-glass: rgba(255,255,255,0.72);
+  --nav-border: rgba(255,255,255,0.9);
+  --bubble: rgba(255,255,255,0.85);
+  --card: rgba(255,255,255,0.75);
+  --input-bg: rgba(255,255,255,0.8);
+  --border: rgba(0,0,0,0.08);
+  --success: #30d158;
+  --warning: #ff9f0a;
+  --danger: #ff453a;
+  --purple: #bf5af2;
+  --teal: #5ac8fa;
+  --pink: #ff375f;
+  --green: #30d158;
+  --orange: #ff9f0a;
+  --indigo: #5e5ce6;
+  --shadow: 0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06);
+}
+
+[data-theme="dark"] {
+  --bg: #000000;
+  --bg2: #1c1c1e;
+  --bg3: rgba(28,28,30,0.8);
+  --text: #f5f5f7;
+  --text2: #ebebf5;
+  --text3: #8e8e93;
+  --accent: #0a84ff;
+  --accent2: #409cff;
+  --glass: rgba(28,28,30,0.6);
+  --glass-border: rgba(255,255,255,0.12);
+  --glass-shadow: rgba(0,0,0,0.3);
+  --nav-glass: rgba(20,20,22,0.82);
+  --nav-border: rgba(255,255,255,0.1);
+  --bubble: rgba(60,60,65,0.9);
+  --card: rgba(28,28,30,0.85);
+  --input-bg: rgba(44,44,46,0.9);
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* ===================== RESET & BASE ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* ===================== LOADING SCREEN ===================== */
+#loader {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+#loader.fade-out {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.loader-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: loaderReveal 1s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.loader-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #0071e3, #5ac8fa, #bf5af2);
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  box-shadow: 0 0 60px rgba(0,113,227,0.5), 0 0 120px rgba(90,200,250,0.2);
+  animation: loaderPulse 2s ease-in-out infinite;
+}
+
+.loader-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.loader-title span {
+  background: linear-gradient(90deg, #0071e3, #5ac8fa, #bf5af2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.loader-bar-wrap {
+  width: 200px;
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  animation: loaderReveal 1s 0.3s ease forwards;
+  opacity: 0;
+}
+
+.loader-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #0071e3, #5ac8fa, #bf5af2);
+  border-radius: 999px;
+  width: 0%;
+  animation: loaderFill 2.2s 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+.loader-sub {
+  color: rgba(255,255,255,0.4);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  animation: loaderReveal 1s 0.2s ease forwards;
+  opacity: 0;
+}
+
+@keyframes loaderReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes loaderFill {
+  to { width: 100%; }
+}
+@keyframes loaderPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(0,113,227,0.5); }
+  50% { transform: scale(1.04); box-shadow: 0 0 80px rgba(0,113,227,0.7), 0 0 160px rgba(90,200,250,0.3); }
+}
+
+/* ===================== BACKGROUND BLOBS ===================== */
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+
+[data-theme="dark"] .orb { opacity: 0.08; }
+
+.orb-1 { width: 600px; height: 600px; background: #0071e3; top: -200px; right: -100px; animation-delay: 0s; }
+.orb-2 { width: 500px; height: 500px; background: #bf5af2; bottom: -100px; left: -100px; animation-delay: -7s; }
+.orb-3 { width: 400px; height: 400px; background: #5ac8fa; top: 40%; left: 40%; animation-delay: -14s; }
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+/* ===================== NAV ===================== */
+nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: var(--nav-glass);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--nav-border);
+  border-radius: 999px;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 8px 32px var(--glass-shadow), 0 1px 0 var(--glass-border);
+  transition: background 0.5s, border 0.5s, box-shadow 0.5s;
+  animation: navDrop 0.6s 2.8s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes navDrop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.nav-logo {
+  font-size: 15px;
+  font-weight: 800;
+  padding: 8px 16px;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+/* Liquid glass bubble indicator */
+.nav-bubble {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--bubble);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+  transition: left 0.4s cubic-bezier(0.34,1.56,0.64,1), width 0.4s cubic-bezier(0.34,1.56,0.64,1), height 0.3s ease, top 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="dark"] .nav-bubble {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.nav-link {
+  position: relative;
+  z-index: 1;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  transition: color 0.3s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.nav-link.active, .nav-link:hover { color: var(--text); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 8px;
+}
+
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  color: var(--text);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ===================== PAGES ===================== */
+.page {
+  display: none;
+  min-height: 100vh;
+  padding: 120px 24px 80px;
+  position: relative;
+  z-index: 1;
+  animation: pageIn 0.5s ease;
+}
+
+.page.active { display: block; }
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.container-wide {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===================== HERO ===================== */
+.hero {
+  text-align: center;
+  padding: 60px 0 80px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 28px;
+  animation: heroFadeUp 0.7s 0.1s ease both;
+}
+
+.hero h1 {
+  font-size: clamp(52px, 8vw, 88px);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+  animation: heroFadeUp 0.7s 0.2s ease both;
+}
+
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--teal) 50%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 19px;
+  color: var(--text2);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+  animation: heroFadeUp 0.7s 0.3s ease both;
+}
+
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Quick stats strip */
+.stats-strip {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+  animation: heroFadeUp 0.7s 0.5s ease both;
+}
+
+.stat-chip {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 16px 24px;
+  text-align: center;
+  min-width: 130px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-chip:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-chip .val {
+  font-size: 26px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-chip .lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ===================== GLASS CARDS ===================== */
+.glass-card {
+  background: var(--card);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.section-sub {
+  font-size: 15px;
+  color: var(--text3);
+  margin-bottom: 28px;
+}
+
+/* ===================== EXPENSES PAGE ===================== */
+.budget-hero {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.budget-display {
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: -3px;
+  background: linear-gradient(135deg, var(--accent), var(--teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.budget-label {
+  font-size: 14px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.budget-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.budget-input-wrap input {
+  width: 200px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 20px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  backdrop-filter: blur(20px);
+}
+
+.budget-input-wrap input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,113,227,0.15);
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent2);
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0,113,227,0.4);
+}
+
+.btn-ghost {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  color: var(--text);
+  backdrop-filter: blur(20px);
+}
+
+.btn-ghost:hover {
+  background: var(--card);
+  transform: scale(1.03);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+  transform: scale(1.03);
+}
+
+/* Expense categories */
+.expenses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.expense-cat {
+  background: var(--card);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 20px;
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  animation: catIn 0.5s ease both;
+}
+
+.expense-cat:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+@keyframes catIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.cat-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cat-sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+.cat-input {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  backdrop-filter: blur(20px);
+  font-family: 'Nunito', sans-serif;
+}
+
+.cat-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,113,227,0.12);
+}
+
+.cat-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.cat-pct {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: right;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* Summary bar */
+.summary-bar {
+  background: var(--card);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.sum-item { text-align: center; }
+.sum-val { font-size: 22px; font-weight: 800; }
+.sum-lbl { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.sum-val.red { color: var(--danger); }
+.sum-val.green { color: var(--success); }
+.sum-val.blue { color: var(--accent); }
+
+/* Chart area */
+.chart-wrap {
+  position: relative;
+  max-width: 340px;
+  margin: 0 auto 24px;
+}
+
+.chart-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Transactions */
+.txn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.txn-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  animation: txnIn 0.4s ease both;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.txn-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow);
+}
+
+@keyframes txnIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.txn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.txn-info { flex: 1; }
+.txn-name { font-size: 14px; font-weight: 700; }
+.txn-date { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.txn-amount { font-size: 16px; font-weight: 800; color: var(--danger); }
+
+.add-txn-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: end;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.form-input, .form-select {
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  backdrop-filter: blur(20px);
+  font-family: 'Nunito', sans-serif;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,113,227,0.12);
+}
+
+.form-select option { background: var(--bg2); }
+
+/* ===================== CHECKLIST PAGE ===================== */
+.day-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.day-tab {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.day-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0,113,227,0.3);
+}
+
+.day-tab:hover:not(.active) {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.checklist-section {
+  margin-bottom: 24px;
+}
+
+.checklist-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--card);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: checkIn 0.4s ease both;
+}
+
+.check-item:hover { transform: translateX(4px); box-shadow: var(--shadow); }
+
+.check-item.done {
+  opacity: 0.55;
+  border-color: var(--success);
+}
+
+.check-item.done .check-text { text-decoration: line-through; color: var(--text3); }
+
+@keyframes checkIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.check-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.3s ease;
+  font-size: 12px;
+}
+
+.check-item.done .check-box {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.check-content { flex: 1; }
+.check-time { font-size: 11px; font-weight: 700; color: var(--accent); font-family: monospace; margin-bottom: 2px; }
+.check-text { font-size: 14px; font-weight: 600; line-height: 1.4; }
+.check-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.progress-ring-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 28px;
+  background: var(--card);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+
+.ring-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.ring-svg { transform: rotate(-90deg); }
+
+.ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
+
+.ring-progress {
+  fill: none;
+  stroke: url(#ringGrad);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ring-pct { font-size: 18px; font-weight: 800; color: var(--text); }
+.ring-done { font-size: 9px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.progress-info h3 { font-size: 18px; font-weight: 800; }
+.progress-info p { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+.reset-btn-wrap { margin-top: 8px; }
+
+/* ===================== ABOUT PAGE ===================== */
+.about-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.avatar-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--teal), var(--purple));
+  padding: 3px;
+  margin-bottom: 20px;
+  animation: heroFadeUp 0.7s 0.1s ease both;
+}
+
+.avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+
+.about-name {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  animation: heroFadeUp 0.7s 0.2s ease both;
+}
+
+.about-title {
+  font-size: 15px;
+  color: var(--text3);
+  font-weight: 600;
+  margin-top: 4px;
+  animation: heroFadeUp 0.7s 0.3s ease both;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.about-stat {
+  background: var(--card);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 22px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.about-stat:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+.about-stat-icon { font-size: 28px; margin-bottom: 8px; }
+.about-stat-val { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.about-stat-lbl { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.subject-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subject-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--card);
+  backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.subject-item:hover { transform: translateX(4px); box-shadow: var(--shadow); }
+
+.subject-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.subject-info { flex: 1; }
+.subject-name { font-size: 14px; font-weight: 700; }
+.subject-code { font-size: 11px; color: var(--text3); margin-top: 1px; font-family: monospace; font-weight: 600; }
+
+.goal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.goal-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.goal-chip:hover { transform: scale(1.04); box-shadow: var(--shadow); }
+
+/* ===================== MISC ===================== */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 720px) {
+  .two-col { grid-template-columns: 1fr; }
+  nav { top: 12px; padding: 4px 6px; }
+  .nav-logo { padding: 8px 10px; font-size: 13px; }
+  .nav-link { padding: 8px 12px; font-size: 13px; }
+  .add-txn-form { grid-template-columns: 1fr 1fr; }
+  .hero h1 { font-size: 42px; }
+  .budget-display { font-size: 52px; }
+}
+
+/* Scroll animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Toasts */
+#toast-container {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.toast {
+  background: var(--card);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 300px;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(24px) scale(0.9); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+.toast.out {
+  animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastOut {
+  to { opacity: 0; transform: translateX(24px) scale(0.9); }
+}
+
+/* Floating save btn */
+.save-fab {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,113,227,0.5);
+  transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-fab.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.save-fab:hover {
+  background: var(--accent2);
+  transform: translateX(-50%) translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,113,227,0.6);
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOADER ============ -->
+<div id="loader">
+  <div class="loader-logo">
+    <div class="loader-icon">✦</div>
+    <div class="loader-title">New <span>Me</span></div>
+  </div>
+  <div class="loader-sub">Self Development Protocol</div>
+  <div class="loader-bar-wrap">
+    <div class="loader-bar"></div>
+  </div>
+</div>
+
+<!-- ============ BACKGROUND ============ -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- ============ NAV ============ -->
+<nav id="main-nav">
+  <div class="nav-logo">✦ New Me</div>
+  <div class="nav-links" id="nav-links">
+    <div class="nav-bubble" id="nav-bubble"></div>
+    <div class="nav-link active" data-page="home">Home</div>
+    <div class="nav-link" data-page="expenses">Expenses</div>
+    <div class="nav-link" data-page="checklist">Checklist</div>
+    <div class="nav-link" data-page="about">About</div>
+  </div>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" title="Toggle theme">☀️</button>
+  </div>
+</nav>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- FAB -->
+<button class="save-fab" id="save-fab" onclick="saveAllData()">💾 Save Data</button>
+
+<!-- ===================== HOME PAGE ===================== -->
+<div class="page active" id="page-home">
+  <div class="container">
+    <div class="hero">
+      <div class="hero-badge">🚀 Self Development Protocol</div>
+      <h1>Your path to a<br><span class="gradient">New Me</span></h1>
+      <p>Track your budget, follow your daily protocol, and become the best version of yourself.</p>
+      <div class="stats-strip" id="home-stats">
+        <div class="stat-chip">
+          <div class="val" id="hs-budget">$0</div>
+          <div class="lbl">Monthly Budget</div>
+        </div>
+        <div class="stat-chip">
+          <div class="val" id="hs-spent">$0</div>
+          <div class="lbl">Spent So Far</div>
+        </div>
+        <div class="stat-chip">
+          <div class="val" id="hs-tasks">0%</div>
+          <div class="lbl">Today's Tasks</div>
+        </div>
+        <div class="stat-chip">
+          <div class="val">Year 2</div>
+          <div class="lbl">CS Degree</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal two-col" style="margin-bottom: 24px;">
+      <div class="glass-card" style="cursor:pointer" onclick="goPage('expenses')">
+        <div style="font-size: 36px; margin-bottom: 12px;">💸</div>
+        <div class="section-title" style="font-size: 20px;">Expense Tracker</div>
+        <p style="font-size: 13px; color: var(--text3); margin-top: 6px;">Set your monthly budget, allocate funds to categories, and visualize your spending with beautiful charts.</p>
+        <div style="margin-top: 16px; color: var(--accent); font-size: 13px; font-weight: 700;">Open Tracker →</div>
+      </div>
+      <div class="glass-card" style="cursor:pointer" onclick="goPage('checklist')">
+        <div style="font-size: 36px; margin-bottom: 12px;">✅</div>
+        <div class="section-title" style="font-size: 20px;">Daily Checklist</div>
+        <p style="font-size: 13px; color: var(--text3); margin-top: 6px;">Follow your Integrated Master Protocol — from 5 AM devotion to 10 PM lights out. Check off every block.</p>
+        <div style="margin-top: 16px; color: var(--accent); font-size: 13px; font-weight: 700;">Open Checklist →</div>
+      </div>
+    </div>
+
+    <div class="reveal glass-card">
+      <div class="section-title" style="font-size: 18px; margin-bottom: 4px;">⚡ Protocol Overview</div>
+      <div class="section-sub">Your week at a glance</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px;">
+        <div style="background: var(--input-bg); border-radius: 14px; padding: 14px; border: 1px solid var(--border);">
+          <div style="font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Mon / Wed</div>
+          <div style="font-size: 12px; color: var(--text2); line-height: 1.5;">Focus Days<br>5AM Gym<br>8hrs Analog Study</div>
+        </div>
+        <div style="background: var(--input-bg); border-radius: 14px; padding: 14px; border: 1px solid var(--border);">
+          <div style="font-size: 11px; font-weight: 800; color: var(--purple); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Tuesday</div>
+          <div style="font-size: 12px; color: var(--text2); line-height: 1.5;">6-Hr Gauntlet<br>4 Lectures<br>Fast all day</div>
+        </div>
+        <div style="background: var(--input-bg); border-radius: 14px; padding: 14px; border: 1px solid var(--border);">
+          <div style="font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Thursday</div>
+          <div style="font-size: 12px; color: var(--text2); line-height: 1.5;">Cloud Block<br>AWS Labs<br>5AM Gym</div>
+        </div>
+        <div style="background: var(--input-bg); border-radius: 14px; padding: 14px; border: 1px solid var(--border);">
+          <div style="font-size: 11px; font-weight: 800; color: var(--success); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Friday</div>
+          <div style="font-size: 12px; color: var(--text2); line-height: 1.5;">7AM Class<br>Afternoon Gym<br>2-Hr Screen</div>
+        </div>
+        <div style="background: var(--input-bg); border-radius: 14px; padding: 14px; border: 1px solid var(--border);">
+          <div style="font-size: 11px; font-weight: 800; color: var(--warning); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Weekend</div>
+          <div style="font-size: 12px; color: var(--text2); line-height: 1.5;">Active Recovery<br>Social Time<br>Deep Work</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== EXPENSES PAGE ===================== -->
+<div class="page" id="page-expenses">
+  <div class="container-wide">
+    <div class="budget-hero reveal">
+      <div class="budget-label">Monthly Budget</div>
+      <div class="budget-display" id="budget-display">$0.00</div>
+      <div class="budget-input-wrap">
+        <input type="number" id="budget-input" placeholder="Enter budget..." min="0" step="0.01">
+        <button class="btn btn-primary" onclick="setBudget()">Set Budget</button>
+      </div>
+    </div>
+
+    <div class="summary-bar reveal">
+      <div class="sum-item">
+        <div class="sum-val blue" id="sum-budget">$0.00</div>
+        <div class="sum-lbl">Budget</div>
+      </div>
+      <div style="height: 40px; width: 1px; background: var(--border);"></div>
+      <div class="sum-item">
+        <div class="sum-val red" id="sum-allocated">$0.00</div>
+        <div class="sum-lbl">Allocated</div>
+      </div>
+      <div style="height: 40px; width: 1px; background: var(--border);"></div>
+      <div class="sum-item">
+        <div class="sum-val" id="sum-remaining" style="color: var(--success)">$0.00</div>
+        <div class="sum-lbl">Remaining</div>
+      </div>
+      <div style="height: 40px; width: 1px; background: var(--border);"></div>
+      <div class="sum-item">
+        <div class="sum-val red" id="sum-spent">$0.00</div>
+        <div class="sum-lbl">Actual Spent</div>
+      </div>
+    </div>
+
+    <div class="section-title reveal" style="margin-bottom: 6px;">📊 Budget Breakdown</div>
+    <div class="section-sub reveal">Allocate your monthly budget across categories</div>
+    <div class="expenses-grid reveal" id="expenses-grid"></div>
+
+    <div class="two-col reveal" style="margin-top: 28px;">
+      <div class="glass-card">
+        <div class="section-title" style="font-size: 18px; margin-bottom: 4px;">🥧 Spending Chart</div>
+        <div class="section-sub">Visual breakdown of your allocations</div>
+        <div class="chart-wrap">
+          <canvas id="spending-chart" width="340" height="340"></canvas>
+        </div>
+        <div class="chart-legend" id="chart-legend"></div>
+      </div>
+
+      <div class="glass-card">
+        <div class="section-title" style="font-size: 18px; margin-bottom: 16px;">📝 Log Transaction</div>
+        <div class="add-txn-form">
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <input class="form-input" id="txn-name" placeholder="e.g. Lunch at campus">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Amount ($)</label>
+            <input class="form-input" id="txn-amount" type="number" placeholder="0.00" min="0" step="0.01">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-select" id="txn-cat"></select>
+          </div>
+          <button class="btn btn-primary" onclick="addTransaction()" style="height: fit-content; align-self: end; white-space: nowrap;">+ Add</button>
+        </div>
+        <div class="divider"></div>
+        <div class="section-title" style="font-size: 16px; margin-bottom: 12px;">Recent Transactions</div>
+        <div class="txn-list" id="txn-list">
+          <div style="text-align: center; color: var(--text3); padding: 20px; font-size: 14px;">No transactions yet. Add one above!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CHECKLIST PAGE ===================== -->
+<div class="page" id="page-checklist">
+  <div class="container">
+    <div class="section-title reveal" style="margin-bottom: 4px;">📋 Daily Protocol Checklist</div>
+    <div class="section-sub reveal">Your Integrated Master Protocol — check off each block as you complete it</div>
+
+    <div class="progress-ring-wrap reveal">
+      <div class="ring-container">
+        <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#0071e3"/>
+              <stop offset="100%" style="stop-color:#5ac8fa"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="40" cy="40" r="32"/>
+          <circle class="ring-progress" id="ring-progress" cx="40" cy="40" r="32"
+            stroke-dasharray="201" stroke-dashoffset="201"/>
+        </svg>
+        <div class="ring-text">
+          <div class="ring-pct" id="ring-pct">0%</div>
+          <div class="ring-done">done</div>
+        </div>
+      </div>
+      <div class="progress-info">
+        <h3 id="progress-title">Keep going!</h3>
+        <p id="progress-sub" style="color: var(--text3); font-size: 13px;"></p>
+        <div class="reset-btn-wrap">
+          <button class="btn btn-ghost" style="font-size: 12px; padding: 6px 14px; margin-top: 8px;" onclick="resetChecklist()">🔄 Reset Day</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-tabs reveal" id="day-tabs"></div>
+    <div id="checklist-content"></div>
+  </div>
+</div>
+
+<!-- ===================== ABOUT PAGE ===================== -->
+<div class="page" id="page-about">
+  <div class="container">
+    <div class="about-hero reveal">
+      <div class="avatar-ring">
+        <div class="avatar-inner">🎓</div>
+      </div>
+      <div class="about-name">New Me</div>
+      <div class="about-title">CS / Cybersecurity Student · Ghana · Builder in Progress</div>
+    </div>
+
+    <div class="about-grid reveal">
+      <div class="about-stat">
+        <div class="about-stat-icon">🇬🇭</div>
+        <div class="about-stat-val">Ghana</div>
+        <div class="about-stat-lbl">Location</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-icon">💻</div>
+        <div class="about-stat-val">CS / Cybersec</div>
+        <div class="about-stat-lbl">Major</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-icon">📅</div>
+        <div class="about-stat-val">Year 2</div>
+        <div class="about-stat-lbl">Academic Year</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-icon">⏰</div>
+        <div class="about-stat-val">05:00 AM</div>
+        <div class="about-stat-lbl">Wake-Up Time</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-icon">🏋️</div>
+        <div class="about-stat-val">5x / Week</div>
+        <div class="about-stat-lbl">Gym Frequency</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-icon">📖</div>
+        <div class="about-stat-val">IF 18:6</div>
+        <div class="about-stat-lbl">Fasting Protocol</div>
+      </div>
+    </div>
+
+    <div class="glass-card reveal" style="margin-bottom: 24px;">
+      <div class="section-title" style="font-size: 18px; margin-bottom: 4px;">📚 Current Subjects</div>
+      <div class="section-sub">Semester courseload</div>
+      <div class="subject-list">
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(0,113,227,0.15);">🌐</div>
+          <div class="subject-info">
+            <div class="subject-name">Computer Networks</div>
+            <div class="subject-code">CSNS 242 · Venue C1B · Tuesday 10:00–11:30</div>
+          </div>
+        </div>
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(90,200,250,0.15);">📜</div>
+          <div class="subject-info">
+            <div class="subject-name">Scripting Languages</div>
+            <div class="subject-code">CSSD 204 · Tuesday 11:30–13:00</div>
+          </div>
+        </div>
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(191,90,242,0.15);">🤖</div>
+          <div class="subject-info">
+            <div class="subject-name">Automata Theory</div>
+            <div class="subject-code">CSSD 232 · Venue C14 · Tuesday 13:00–14:30</div>
+          </div>
+        </div>
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(255,159,10,0.15);">🔷</div>
+          <div class="subject-info">
+            <div class="subject-name">Object-Oriented Analysis</div>
+            <div class="subject-code">CSSD 202 · Venue C1B · Tuesday 14:30–16:00</div>
+          </div>
+        </div>
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(48,209,88,0.15);">☁️</div>
+          <div class="subject-info">
+            <div class="subject-name">Intro to Cloud Computing</div>
+            <div class="subject-code">CSBC 252 · Venue C1A · Thursday 10:00–11:30</div>
+          </div>
+        </div>
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(255,69,58,0.15);">⚙️</div>
+          <div class="subject-info">
+            <div class="subject-name">Operating Systems</div>
+            <div class="subject-code">CSSD 216 · Venue C5 · Friday 07:00–08:30</div>
+          </div>
+        </div>
+        <div class="subject-item">
+          <div class="subject-icon" style="background: rgba(94,92,230,0.15);">🛠️</div>
+          <div class="subject-info">
+            <div class="subject-name">Fundamental Software Engineering</div>
+            <div class="subject-code">CSSD 218 · Venue C15 · Friday 11:30–13:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card reveal">
+      <div class="section-title" style="font-size: 18px; margin-bottom: 4px;">🎯 Current Goals</div>
+      <div class="section-sub">Targets in the pipeline</div>
+      <div class="goal-chips">
+        <div class="goal-chip">☁️ AWS Certification</div>
+        <div class="goal-chip">🔐 Google Cert Prep</div>
+        <div class="goal-chip">📈 Tradovate Trading</div>
+        <div class="goal-chip">🎬 Content Creation</div>
+        <div class="goal-chip">💪 Body Recomposition</div>
+        <div class="goal-chip">🧗 Calisthenics Skills</div>
+        <div class="goal-chip">📱 OpusClip / CapCut</div>
+        <div class="goal-chip">🛡️ Cybersecurity Career</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const EXPENSE_CATEGORIES = [
+  { id: 'food', name: 'Food & Meals', icon: '🍱', sub: 'Campus meals, groceries, snacks', color: '#ff9f0a', bg: 'rgba(255,159,10,0.15)' },
+  { id: 'transport', name: 'Transport', icon: '🚌', sub: 'Trotro, Uber, shared rides', color: '#5ac8fa', bg: 'rgba(90,200,250,0.15)' },
+  { id: 'airtime', name: 'Airtime & Data', icon: '📱', sub: 'MTN, Vodafone, internet bundles', color: '#30d158', bg: 'rgba(48,209,88,0.15)' },
+  { id: 'textbooks', name: 'Textbooks & Print', icon: '📚', sub: 'Course materials, printing', color: '#0071e3', bg: 'rgba(0,113,227,0.15)' },
+  { id: 'gym', name: 'Gym / Fitness', icon: '🏋️', sub: 'Gym fees, supplements', color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
+  { id: 'church', name: 'Church & Giving', icon: '⛪', sub: 'Tithe, offerings, donations', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+  { id: 'clothing', name: 'Clothing', icon: '👕', sub: 'Clothes, shoes, essentials', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  { id: 'personal', name: 'Personal Care', icon: '🧴', sub: 'Toiletries, grooming, hygiene', color: '#ec4899', bg: 'rgba(236,72,153,0.15)' },
+  { id: 'savings', name: 'Savings / Investment', icon: '💰', sub: 'Emergency fund, trading capital', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+  { id: 'entertainment', name: 'Entertainment', icon: '🎮', sub: 'Subscriptions, leisure, outings', color: '#6366f1', bg: 'rgba(99,102,241,0.15)' },
+  { id: 'stationery', name: 'Stationery', icon: '✏️', sub: 'Pens, paper, notebooks', color: '#64748b', bg: 'rgba(100,116,139,0.15)' },
+  { id: 'misc', name: 'Miscellaneous', icon: '📦', sub: 'Unexpected expenses, other', color: '#94a3b8', bg: 'rgba(148,163,184,0.15)' },
+];
+
+const CHECKLIST_DATA = {
+  'Mon/Wed': [
+    { section: '🌅 Morning Block', items: [
+      { id:'mw1', time:'05:00–05:30', text:'Morning Devotion — open your Bible, pray, and set your intentions for the day', tag:'Spiritual', tagColor:'#8b5cf6' },
+      { id:'mw2', time:'05:30–06:30', text:'Gym Hour 1 — Cardio: 30–45 min treadmill / outdoor run / elliptical at moderate intensity', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'mw3', time:'06:30–07:30', text:'Gym Hour 2 — Strength: Calisthenics prep (push-ups, pull-ups, dips, core work)', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'mw4', time:'07:30–08:30', text:'Shower, groom, pack your bag, commute to campus', tag:'Routine', tagColor:'#64748b' },
+      { id:'mw5', time:'08:30–09:00', text:'Breakfast — begin your 18:6 intermittent fast window. Eat within this slot then no food until supper', tag:'Diet', tagColor:'#f59e0b' },
+    ]},
+    { section: '📖 Study Block AM', items: [
+      { id:'mw6', time:'09:00–11:00', text:'Analog Study — offline cert prep. Write cloud/networking concepts by hand. No screens.', tag:'Academic', tagColor:'#10b981' },
+      { id:'mw7', time:'11:00–13:00', text:'Analog Study — write code logic on paper, review lecture notes, create mind maps. Sip water.', tag:'Academic', tagColor:'#10b981' },
+    ]},
+    { section: '💻 High-ROI Screen', items: [
+      { id:'mw8', time:'13:00–14:00', text:'High-ROI Screen (1 hr): Chart analysis on Tradovate, AWS lab execution, or Google cert practice test', tag:'Screen', tagColor:'#3b82f6' },
+    ]},
+    { section: '📖 Study Block PM', items: [
+      { id:'mw9', time:'14:00–16:00', text:'Analog Study — reading physical textbooks, working through offline homework problems', tag:'Academic', tagColor:'#10b981' },
+      { id:'mw10', time:'16:00–18:00', text:'Analog Study / Project Work — offline problem sets, handwritten assignments, concept review', tag:'Academic', tagColor:'#10b981' },
+    ]},
+    { section: '🌙 Evening Block', items: [
+      { id:'mw11', time:'18:00–18:45', text:'Supper — break your fast. Balanced meal: protein + complex carbs + vegetables', tag:'Diet', tagColor:'#f59e0b' },
+      { id:'mw12', time:'18:45–19:45', text:'High-ROI Screen (1 hr): Video editing in CapCut/OpusClip, or compiling / debugging code', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'mw13', time:'19:45–20:30', text:'Wind down — lay out gear for tomorrow, pack your gym bag, prep any materials needed', tag:'Routine', tagColor:'#64748b' },
+      { id:'mw14', time:'20:30–21:30', text:'Leisure Screen (1 hr max) — scrolling, gaming, content consumption. Hard cutoff at 21:30.', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'mw15', time:'21:30–22:00', text:'Evening Devotion — reflection, gratitude journal, Bible reading, prayer. Lights out at 22:00.', tag:'Spiritual', tagColor:'#8b5cf6' },
+    ]},
+  ],
+  'Tuesday': [
+    { section: '🌅 Morning Block', items: [
+      { id:'tu1', time:'05:00–05:20', text:'Morning Devotion — Bible reading and prayer. Keep it focused; you have a packed day ahead.', tag:'Spiritual', tagColor:'#8b5cf6' },
+      { id:'tu2', time:'05:20–06:20', text:'Gym — Cardio: 40–50 min run/bike. Light warmup and cooldown.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'tu3', time:'06:20–07:20', text:'Gym — Push Focus: push-ups pyramid, dips, shoulder press, chest work. Keep rest short.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'tu4', time:'07:20–08:30', text:'Shower, commute. Pack water bottle and black coffee — you will fast through all lectures.', tag:'Routine', tagColor:'#64748b' },
+      { id:'tu5', time:'08:30–09:00', text:'Breakfast — last meal before your fast. Eat enough: oats, eggs, or full rice meal.', tag:'Diet', tagColor:'#f59e0b' },
+    ]},
+    { section: '🎓 6-Hour Lecture Gauntlet', items: [
+      { id:'tu6', time:'09:00–10:00', text:'Commute to campus. Arrive at Venue C1B early. Set up your notebook, pens ready. Water only.', tag:'Routine', tagColor:'#64748b' },
+      { id:'tu7', time:'10:00–11:30', text:'CLASS: Computer Networks (CSNS 242) — Venue C1B. Actively take notes. Ask one question minimum.', tag:'Academic', tagColor:'#10b981' },
+      { id:'tu8', time:'11:30–13:00', text:'CLASS: Scripting Languages (CSSD 204) — follow-up from Computer Networks. Stay engaged.', tag:'Academic', tagColor:'#10b981' },
+      { id:'tu9', time:'13:00–14:30', text:'CLASS: Automata Theory (CSSD 232) — move to Venue C14. Finite automata, grammars, regular expressions.', tag:'Academic', tagColor:'#10b981' },
+      { id:'tu10', time:'14:30–16:00', text:'CLASS: Object-Oriented Analysis (CSSD 202) — back to Venue C1B. UML, design patterns, OOP principles.', tag:'Academic', tagColor:'#10b981' },
+    ]},
+    { section: '💻 Evening Execution', items: [
+      { id:'tu11', time:'16:00–17:00', text:'Commute home. Decompress — no screens in transit. Breathe, relax, mentally review what you learned.', tag:'Routine', tagColor:'#64748b' },
+      { id:'tu12', time:'17:00–18:00', text:'High-ROI Screen (1 hr): Cert study — practice AWS/Google Cloud questions or review lecture slides', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'tu13', time:'18:00–18:45', text:'Supper — you\'ve earned it. Break your fast with a solid meal. Protein priority.', tag:'Diet', tagColor:'#f59e0b' },
+      { id:'tu14', time:'18:45–19:45', text:'High-ROI Screen (1 hr): Complete assignments or edit a video walkthrough in OpusClip', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'tu15', time:'19:45–20:30', text:'Prep for Wednesday: pack gym bag, set 5:00 AM alarm, review Wednesday schedule', tag:'Routine', tagColor:'#64748b' },
+      { id:'tu16', time:'20:30–21:30', text:'Leisure Screen (1 hr max) — relax, you crushed the gauntlet. Hard cutoff at 21:30.', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'tu17', time:'21:30–22:00', text:'Evening Devotion — rest in gratitude. You made it through the gauntlet. Lights out at 22:00.', tag:'Spiritual', tagColor:'#8b5cf6' },
+    ]},
+  ],
+  'Thursday': [
+    { section: '🌅 Morning Block', items: [
+      { id:'th1', time:'05:00–05:20', text:'Morning Devotion — Bible, prayer, intention setting', tag:'Spiritual', tagColor:'#8b5cf6' },
+      { id:'th2', time:'05:20–06:20', text:'Gym — Cardio: 40 min run or bike. Maintain zone 2 heart rate.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'th3', time:'06:20–07:20', text:'Gym — Shoulder Focus: lateral raises, overhead press, face pulls, rear delt work. No slouching.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'th4', time:'07:20–08:30', text:'Shower, commute to campus, prep for Cloud Computing class', tag:'Routine', tagColor:'#64748b' },
+      { id:'th5', time:'08:30–09:00', text:'Breakfast — fueled before Cloud class. Eat well.', tag:'Diet', tagColor:'#f59e0b' },
+    ]},
+    { section: '🎓 Cloud Block', items: [
+      { id:'th6', time:'09:00–10:00', text:'Commute. Arrive at Venue C1A. Review yesterday\'s Cloud notes briefly.', tag:'Routine', tagColor:'#64748b' },
+      { id:'th7', time:'10:00–11:30', text:'CLASS: Intro to Cloud Computing (CSBC 252) — Venue C1A. EC2, S3, IAM, VPC concepts.', tag:'Academic', tagColor:'#10b981' },
+      { id:'th8', time:'11:30–13:00', text:'Analog Study: Deep offline review of Cloud concepts just covered — draw architecture diagrams by hand', tag:'Academic', tagColor:'#10b981' },
+    ]},
+    { section: '💻 Execution & Study', items: [
+      { id:'th9', time:'13:00–14:00', text:'High-ROI Screen (1 hr): AWS Lab — create EC2 instances, configure S3 buckets, or analyze Tradovate charts', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'th10', time:'14:00–16:00', text:'Analog Study: offline coursework — read textbook chapters, work problems on paper, no distractions', tag:'Academic', tagColor:'#10b981' },
+      { id:'th11', time:'16:00–18:00', text:'Analog Study: reading and offline homework. This is your deep afternoon focus block. Guard it.', tag:'Academic', tagColor:'#10b981' },
+    ]},
+    { section: '🌙 Evening Block', items: [
+      { id:'th12', time:'18:00–18:45', text:'Supper — break fast. Solid meal, hydrate well.', tag:'Diet', tagColor:'#f59e0b' },
+      { id:'th13', time:'18:45–19:45', text:'High-ROI Screen (1 hr): Content creation — record, edit, or publish a walkthrough/tutorial clip', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'th14', time:'19:45–20:30', text:'Wind down — prep gym bag for Friday morning, review Friday timetable', tag:'Routine', tagColor:'#64748b' },
+      { id:'th15', time:'20:30–21:30', text:'Leisure Screen (1 hr max)', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'th16', time:'21:30–22:00', text:'Evening Devotion. Lights out at 22:00 sharp.', tag:'Spiritual', tagColor:'#8b5cf6' },
+    ]},
+  ],
+  'Friday': [
+    { section: '🌅 Morning Block (No Gym)', items: [
+      { id:'fr1', time:'05:00–05:30', text:'Morning Devotion — Bible reading and prayer. Note: gym is shifted to afternoon today.', tag:'Spiritual', tagColor:'#8b5cf6' },
+      { id:'fr2', time:'05:30–07:00', text:'Shower, dress, commute to campus. Arrive at Venue C5 before 07:00.', tag:'Routine', tagColor:'#64748b' },
+    ]},
+    { section: '🎓 Early Classes', items: [
+      { id:'fr3', time:'07:00–08:30', text:'CLASS: Operating Systems (CSSD 216) — Venue C5. Processes, memory management, scheduling.', tag:'Academic', tagColor:'#10b981' },
+      { id:'fr4', time:'08:30–09:00', text:'Breakfast — eat on campus after OS class. Your only morning eating window today.', tag:'Diet', tagColor:'#f59e0b' },
+      { id:'fr5', time:'09:00–11:30', text:'Analog Study: offline review of Operating Systems concepts just covered. Mind maps, diagrams.', tag:'Academic', tagColor:'#10b981' },
+      { id:'fr6', time:'11:30–13:00', text:'CLASS: Fundamental Software Engineering (CSSD 218) — Venue C15. SDLC, agile, design patterns.', tag:'Academic', tagColor:'#10b981' },
+    ]},
+    { section: '💪 Afternoon Gym (Shifted)', items: [
+      { id:'fr7', time:'13:00–14:00', text:'Gym Hour 1 (Shifted): Cardio — 40 min run or cycling. Decompress from the morning lectures.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'fr8', time:'14:00–15:00', text:'Gym Hour 2: Calisthenics Primer — hollow body holds, L-sits, tuck planche attempts, bar work', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'fr9', time:'15:00–16:00', text:'Shower at gym/home and commute back', tag:'Routine', tagColor:'#64748b' },
+    ]},
+    { section: '💻 Consolidated Screen Block', items: [
+      { id:'fr10', time:'16:00–18:00', text:'High-ROI Screen (2 Hrs Consolidated): Deep coding project, or full video edit session in CapCut/OpusClip', tag:'Screen', tagColor:'#3b82f6' },
+    ]},
+    { section: '🌙 Evening & Weekend Prep', items: [
+      { id:'fr11', time:'18:00–18:45', text:'Supper — good meal to end the week. You earned it.', tag:'Diet', tagColor:'#f59e0b' },
+      { id:'fr12', time:'18:45–20:30', text:'Offline relaxation and weekend planning — no screens. Journal, plan Saturday, call family.', tag:'Routine', tagColor:'#64748b' },
+      { id:'fr13', time:'20:30–21:30', text:'Leisure Screen (1 hr max) — wind down the work week. Social media, entertainment.', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'fr14', time:'21:30–22:00', text:'Evening Devotion. Gratitude for the week. Lights out at 22:00.', tag:'Spiritual', tagColor:'#8b5cf6' },
+    ]},
+  ],
+  'Weekend': [
+    { section: '🌅 Morning Block', items: [
+      { id:'we1', time:'06:00–06:30', text:'Morning Devotion — take your time on weekends. Extended prayer, worship, Bible chapter.', tag:'Spiritual', tagColor:'#8b5cf6' },
+      { id:'we2', time:'06:30–07:30', text:'Active Recovery: Light 30-minute walk outside. Fresh air, no gym intensity today.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'we3', time:'07:30–08:30', text:'Active Recovery: Deep stretching session — hip flexors, hamstrings, shoulders, thoracic spine. 30 min mobility work.', tag:'Fitness', tagColor:'#ef4444' },
+      { id:'we4', time:'08:30–09:00', text:'Breakfast — relaxed morning meal. Cook something proper.', tag:'Diet', tagColor:'#f59e0b' },
+    ]},
+    { section: '📖 Deep Offline Work', items: [
+      { id:'we5', time:'09:00–10:30', text:'Deep Offline Work: project planning — sketch out next week\'s goals, project milestones, assignment timelines', tag:'Academic', tagColor:'#10b981' },
+      { id:'we6', time:'10:30–12:00', text:'Deep Offline Work: reading — books, textbooks, articles printed offline. No screens. Focus.', tag:'Academic', tagColor:'#10b981' },
+      { id:'we7', time:'12:00–13:00', text:'Chores — laundry, cleaning room, organizing workspace, meal prep for the coming week', tag:'Routine', tagColor:'#64748b' },
+    ]},
+    { section: '💻 Execution Block', items: [
+      { id:'we8', time:'13:00–15:00', text:'High-ROI Screen (2 hrs consolidated): Cert practice tests, AWS labs, trading review, or video batch-editing', tag:'Screen', tagColor:'#3b82f6' },
+    ]},
+    { section: '🌞 Rest & Social', items: [
+      { id:'we9', time:'15:00–18:00', text:'Social time — friends, family, church activities, recreation. Be fully present. Put the phone down.', tag:'Routine', tagColor:'#64748b' },
+      { id:'we10', time:'18:00–18:45', text:'Supper — enjoy a relaxed evening meal.', tag:'Diet', tagColor:'#f59e0b' },
+      { id:'we11', time:'18:45–20:30', text:'Offline relaxation — hobbies, reading, journaling. Intentional rest. No doom-scrolling.', tag:'Routine', tagColor:'#64748b' },
+      { id:'we12', time:'20:30–21:30', text:'Leisure Screen (1 hr max)', tag:'Screen', tagColor:'#3b82f6' },
+      { id:'we13', time:'21:30–22:00', text:'Evening Devotion — reflect on the week, set a powerful intention for the week ahead. Lights out at 22:00.', tag:'Spiritual', tagColor:'#8b5cf6' },
+    ]},
+  ],
+};
+
+// ===================== STATE =====================
+let state = {
+  theme: 'dark',
+  budget: 0,
+  allocations: {},
+  transactions: [],
+  checklistDone: {},
+  activeDay: 'Mon/Wed',
+};
+
+// ===================== PERSISTENCE =====================
+function saveData() {
+  try { localStorage.setItem('newme_state', JSON.stringify(state)); } catch(e) {}
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem('newme_state');
+    if (raw) { const s = JSON.parse(raw); Object.assign(state, s); }
+  } catch(e) {}
+}
+
+// ===================== THEME =====================
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', state.theme);
+  document.getElementById('theme-toggle').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+}
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+  saveData();
+});
+
+// ===================== NAV =====================
+let currentPage = 'home';
+const bubble = document.getElementById('nav-bubble');
+const links = document.querySelectorAll('.nav-link');
+
+function positionBubble(el) {
+  const linksEl = document.getElementById('nav-links');
+  const lr = linksEl.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  bubble.style.left = (er.left - lr.left) + 'px';
+  bubble.style.top = (er.top - lr.top) + 'px';
+  bubble.style.width = er.width + 'px';
+  bubble.style.height = er.height + 'px';
+}
+
+function goPage(id) {
+  currentPage = id;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  links.forEach(l => {
+    l.classList.toggle('active', l.dataset.page === id);
+    if (l.dataset.page === id) positionBubble(l);
+  });
+  saveData();
+  // show/hide fab on expenses page
+  document.getElementById('save-fab').classList.toggle('visible', id === 'expenses');
+  // trigger reveals
+  setTimeout(() => {
+    document.querySelectorAll('#page-' + id + ' .reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 80);
+    });
+  }, 50);
+}
+
+links.forEach(link => {
+  link.addEventListener('click', () => goPage(link.dataset.page));
+  link.addEventListener('mouseenter', () => { if (!link.classList.contains('active')) positionBubble(link); });
+  link.addEventListener('mouseleave', () => {
+    const active = document.querySelector('.nav-link.active');
+    if (active) positionBubble(active);
+  });
+});
+
+// Init bubble position
+window.addEventListener('load', () => {
+  const active = document.querySelector('.nav-link.active');
+  if (active) positionBubble(active);
+});
+
+// ===================== BUDGET / EXPENSES =====================
+function buildExpenseGrid() {
+  const grid = document.getElementById('expenses-grid');
+  const catSelect = document.getElementById('txn-cat');
+  grid.innerHTML = '';
+  catSelect.innerHTML = '';
+
+  EXPENSE_CATEGORIES.forEach((cat, i) => {
+    const val = state.allocations[cat.id] || 0;
+    const pct = state.budget > 0 ? Math.min(100, (val / state.budget) * 100) : 0;
+
+    const div = document.createElement('div');
+    div.className = 'expense-cat';
+    div.style.animationDelay = (i * 50) + 'ms';
+    div.innerHTML = `
+      <div class="cat-header">
+        <div class="cat-icon" style="background:${cat.bg};">${cat.icon}</div>
+        <div>
+          <div class="cat-name">${cat.name}</div>
+          <div class="cat-sub">${cat.sub}</div>
+        </div>
+      </div>
+      <input class="cat-input" type="number" placeholder="$0.00" min="0" step="0.01"
+        value="${val > 0 ? val : ''}"
+        data-cat="${cat.id}"
+        oninput="updateAllocation('${cat.id}', this.value)">
+      <div class="cat-bar">
+        <div class="cat-bar-fill" id="bar-${cat.id}" style="width:${pct}%;background:${cat.color};"></div>
+      </div>
+      <div class="cat-pct" id="pct-${cat.id}">${pct.toFixed(1)}% of budget</div>
+    `;
+    grid.appendChild(div);
+
+    const opt = document.createElement('option');
+    opt.value = cat.id;
+    opt.textContent = cat.icon + ' ' + cat.name;
+    catSelect.appendChild(opt);
+  });
+}
+
+function updateAllocation(id, val) {
+  state.allocations[id] = parseFloat(val) || 0;
+  updateSummary();
+  updateChart();
+  const cat = EXPENSE_CATEGORIES.find(c => c.id === id);
+  const pct = state.budget > 0 ? Math.min(100, (state.allocations[id] / state.budget) * 100) : 0;
+  const bar = document.getElementById('bar-' + id);
+  const pctEl = document.getElementById('pct-' + id);
+  if (bar) bar.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct.toFixed(1) + '% of budget';
+}
+
+function setBudget() {
+  const v = parseFloat(document.getElementById('budget-input').value) || 0;
+  state.budget = v;
+  document.getElementById('budget-display').textContent = '$' + v.toFixed(2);
+  updateSummary();
+  updateChart();
+  buildExpenseGrid();
+  showToast('💰 Budget set to $' + v.toFixed(2));
+  saveData();
+}
+
+function updateSummary() {
+  const allocated = Object.values(state.allocations).reduce((a, b) => a + b, 0);
+  const spent = state.transactions.reduce((a, t) => a + t.amount, 0);
+  const remaining = state.budget - allocated;
+
+  document.getElementById('sum-budget').textContent = '$' + state.budget.toFixed(2);
+  document.getElementById('sum-allocated').textContent = '$' + allocated.toFixed(2);
+  document.getElementById('sum-remaining').textContent = '$' + remaining.toFixed(2);
+  document.getElementById('sum-remaining').style.color = remaining < 0 ? 'var(--danger)' : 'var(--success)';
+  document.getElementById('sum-spent').textContent = '$' + spent.toFixed(2);
+  document.getElementById('budget-display').textContent = '$' + state.budget.toFixed(2);
+
+  // Update home stats
+  document.getElementById('hs-budget').textContent = '$' + state.budget.toFixed(0);
+  document.getElementById('hs-spent').textContent = '$' + spent.toFixed(0);
+}
+
+// ===================== CHART =====================
+let spendingChart = null;
+
+function updateChart() {
+  const cats = EXPENSE_CATEGORIES.filter(c => (state.allocations[c.id] || 0) > 0);
+  const data = cats.map(c => state.allocations[c.id]);
+  const colors = cats.map(c => c.color);
+  const labels = cats.map(c => c.name);
+
+  const ctx = document.getElementById('spending-chart').getContext('2d');
+
+  if (spendingChart) spendingChart.destroy();
+
+  if (cats.length === 0) {
+    ctx.clearRect(0, 0, 340, 340);
+    return;
+  }
+
+  spendingChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderColor: 'transparent',
+        borderWidth: 0,
+        hoverOffset: 12,
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` $${ctx.parsed.toFixed(2)} (${((ctx.parsed / state.budget) * 100).toFixed(1)}%)`
+          }
+        }
+      },
+      animation: { animateRotate: true, duration: 800 }
+    }
+  });
+
+  // Legend
+  const legend = document.getElementById('chart-legend');
+  legend.innerHTML = '';
+  cats.forEach(cat => {
+    legend.innerHTML += `<div class="legend-item">
+      <div class="legend-dot" style="background:${cat.color}"></div>
+      <span>${cat.icon} ${cat.name}</span>
+    </div>`;
+  });
+}
+
+// ===================== TRANSACTIONS =====================
+function addTransaction() {
+  const name = document.getElementById('txn-name').value.trim();
+  const amount = parseFloat(document.getElementById('txn-amount').value) || 0;
+  const catId = document.getElementById('txn-cat').value;
+  if (!name || amount <= 0) { showToast('⚠️ Enter a description and amount', 'warning'); return; }
+  const cat = EXPENSE_CATEGORIES.find(c => c.id === catId);
+  const txn = {
+    id: Date.now(),
+    name,
+    amount,
+    catId,
+    icon: cat ? cat.icon : '📦',
+    color: cat ? cat.color : '#888',
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  };
+  state.transactions.unshift(txn);
+  document.getElementById('txn-name').value = '';
+  document.getElementById('txn-amount').value = '';
+  renderTransactions();
+  updateSummary();
+  saveData();
+  showToast('✅ Transaction added');
+}
+
+function renderTransactions() {
+  const list = document.getElementById('txn-list');
+  if (state.transactions.length === 0) {
+    list.innerHTML = '<div style="text-align: center; color: var(--text3); padding: 20px; font-size: 14px;">No transactions yet. Add one above!</div>';
+    return;
+  }
+  list.innerHTML = state.transactions.slice(0, 10).map((t, i) => `
+    <div class="txn-item" style="animation-delay:${i * 40}ms">
+      <div class="txn-icon" style="background:${t.color}22;">${t.icon}</div>
+      <div class="txn-info">
+        <div class="txn-name">${t.name}</div>
+        <div class="txn-date">${t.date}</div>
+      </div>
+      <div class="txn-amount">-$${t.amount.toFixed(2)}</div>
+      <button onclick="deleteTransaction(${t.id})" style="background:none;border:none;cursor:pointer;font-size:16px;opacity:0.5;padding:4px;" title="Delete">×</button>
+    </div>
+  `).join('');
+}
+
+function deleteTransaction(id) {
+  state.transactions = state.transactions.filter(t => t.id !== id);
+  renderTransactions();
+  updateSummary();
+  saveData();
+  showToast('🗑️ Transaction removed');
+}
+
+function saveAllData() {
+  saveData();
+  showToast('💾 All data saved!', 'success');
+}
+
+// ===================== CHECKLIST =====================
+function buildDayTabs() {
+  const days = Object.keys(CHECKLIST_DATA);
+  const tabs = document.getElementById('day-tabs');
+  tabs.innerHTML = '';
+  days.forEach(d => {
+    const t = document.createElement('div');
+    t.className = 'day-tab' + (state.activeDay === d ? ' active' : '');
+    t.textContent = d;
+    t.onclick = () => { state.activeDay = d; buildDayTabs(); renderChecklist(); };
+    tabs.appendChild(t);
+  });
+}
+
+function renderChecklist() {
+  const content = document.getElementById('checklist-content');
+  const sections = CHECKLIST_DATA[state.activeDay] || [];
+  content.innerHTML = '';
+  sections.forEach(sec => {
+    const sDiv = document.createElement('div');
+    sDiv.className = 'checklist-section reveal';
+    sDiv.innerHTML = `<div class="checklist-section-title">${sec.section}</div>`;
+    sec.items.forEach((item, i) => {
+      const done = !!(state.checklistDone[item.id]);
+      const div = document.createElement('div');
+      div.className = 'check-item' + (done ? ' done' : '');
+      div.style.animationDelay = (i * 50) + 'ms';
+      div.innerHTML = `
+        <div class="check-box">${done ? '✓' : ''}</div>
+        <div class="check-content">
+          <div class="check-time">${item.time}</div>
+          <div class="check-text">${item.text}</div>
+          <span class="check-tag" style="background:${item.tagColor}22;color:${item.tagColor};">${item.tag}</span>
+        </div>
+      `;
+      div.onclick = () => toggleCheck(item.id);
+      sDiv.appendChild(div);
+    });
+    content.appendChild(sDiv);
+    setTimeout(() => sDiv.classList.add('visible'), 50);
+  });
+  updateProgress();
+}
+
+function toggleCheck(id) {
+  state.checklistDone[id] = !state.checklistDone[id];
+  saveData();
+  renderChecklist();
+}
+
+function resetChecklist() {
+  const sections = CHECKLIST_DATA[state.activeDay] || [];
+  sections.forEach(sec => sec.items.forEach(item => { delete state.checklistDone[item.id]; }));
+  saveData();
+  renderChecklist();
+  showToast('🔄 Day reset!');
+}
+
+function updateProgress() {
+  // Total across all days
+  const allItems = Object.values(CHECKLIST_DATA).flatMap(secs => secs.flatMap(s => s.items));
+  const total = allItems.length;
+  const done = allItems.filter(i => state.checklistDone[i.id]).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  const circumference = 201;
+  const offset = circumference - (circumference * pct / 100);
+  document.getElementById('ring-progress').style.strokeDashoffset = offset;
+  document.getElementById('ring-pct').textContent = pct + '%';
+
+  let title = 'Let\'s get started!';
+  if (pct > 0 && pct < 25) title = 'Great start! 🔥';
+  else if (pct >= 25 && pct < 50) title = 'You\'re building momentum!';
+  else if (pct >= 50 && pct < 75) title = 'Halfway there, keep pushing!';
+  else if (pct >= 75 && pct < 100) title = 'Almost done — finish strong!';
+  else if (pct === 100) title = '🏆 Protocol Complete!';
+
+  document.getElementById('progress-title').textContent = title;
+  document.getElementById('progress-sub').textContent = `${done} / ${total} tasks complete across all days`;
+  document.getElementById('hs-tasks').textContent = pct + '%';
+}
+
+// ===================== TOAST =====================
+function showToast(msg, type = 'default') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  const colors = { success: '#30d158', warning: '#ff9f0a', default: 'var(--text)' };
+  t.className = 'toast';
+  t.style.color = colors[type] || colors.default;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('out');
+    setTimeout(() => t.remove(), 300);
+  }, 3000);
+}
+
+// ===================== SCROLL REVEALS =====================
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+
+function observeReveals() {
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+// ===================== INIT =====================
+function init() {
+  loadData();
+  applyTheme();
+
+  // Loader
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('fade-out');
+    setTimeout(() => document.getElementById('loader').remove(), 800);
+  }, 2600);
+
+  // Wait for page load
+  setTimeout(() => {
+    buildExpenseGrid();
+    renderTransactions();
+    updateSummary();
+    updateChart();
+    buildDayTabs();
+    renderChecklist();
+    observeReveals();
+
+    // Init bubble
+    const active = document.querySelector('.nav-link.active');
+    if (active) positionBubble(active);
+
+    // Trigger home reveals
+    document.querySelectorAll('#page-home .reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 100 + 200);
+    });
+  }, 2700);
+}
+
+init();
+</script>
+</body>
+</html>
