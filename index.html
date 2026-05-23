@@ -1187,17 +1187,7 @@ nav {
 </head>
 <body>
 
-<!-- ============ LOADER ============ -->
-<div id="loader">
-  <div class="loader-logo">
-    <div class="loader-icon">✦</div>
-    <div class="loader-title">New <span>Me</span></div>
-  </div>
-  <div class="loader-sub">Self Development Protocol</div>
-  <div class="loader-bar-wrap">
-    <div class="loader-bar"></div>
-  </div>
-</div>
+
 
 <!-- ============ BACKGROUND ============ -->
 <div class="bg-orbs">
@@ -1732,33 +1722,7 @@ async function saveData() {
   }, 800);
 }
 
-async function loadData() {
-  // 1. Load localStorage immediately so UI isn't blank while fetching
-  try {
-    const raw = localStorage.getItem('newme_state');
-    if (raw) { const s = JSON.parse(raw); Object.assign(state, s); }
-  } catch(e) {}
 
-  // 2. Fetch from Supabase — this is the authoritative source
-  try {
-    const { data, error } = await supabase
-      .from('newme_data')
-      .select('data')
-      .eq('id', ROW_ID)
-      .single();
-
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows yet, that's fine
-
-    if (data && data.data) {
-      Object.assign(state, data.data);
-      // Sync back to localStorage so offline fallback is current
-      try { localStorage.setItem('newme_state', JSON.stringify(state)); } catch(e) {}
-    }
-  } catch(err) {
-    console.warn('Supabase load failed, using localStorage:', err.message);
-    setSyncIndicator('error');
-  }
-}
 
 // ===================== THEME =====================
 function applyTheme() {
@@ -2123,33 +2087,63 @@ function observeReveals() {
 // ===================== INIT =====================
 async function init() {
   applyTheme();
+  loadLocalData(); // instant local load so UI is ready immediately
 
-  // Loader stays while we fetch cloud data
-  await loadData();
-  applyTheme(); // re-apply after cloud load (theme may have changed)
+  // Boot UI right away
+  buildExpenseGrid();
+  renderTransactions();
+  updateSummary();
+  updateChart();
+  buildDayTabs();
+  renderChecklist();
+  observeReveals();
 
-  // Dismiss loader
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('fade-out');
-    setTimeout(() => { const l = document.getElementById('loader'); if(l) l.remove(); }, 800);
-  }, 2400);
+  const active = document.querySelector('.nav-link.active');
+  if (active) positionBubble(active);
 
-  setTimeout(() => {
-    buildExpenseGrid();
-    renderTransactions();
-    updateSummary();
-    updateChart();
-    buildDayTabs();
-    renderChecklist();
-    observeReveals();
+  document.querySelectorAll('#page-home .reveal').forEach((el, i) => {
+    setTimeout(() => el.classList.add('visible'), i * 80);
+  });
 
-    const active = document.querySelector('.nav-link.active');
-    if (active) positionBubble(active);
+  // Then sync from Supabase in the background
+  syncFromCloud();
+}
 
-    document.querySelectorAll('#page-home .reveal').forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), i * 100 + 200);
-    });
-  }, 2500);
+function loadLocalData() {
+  try {
+    const raw = localStorage.getItem('newme_state');
+    if (raw) { const s = JSON.parse(raw); Object.assign(state, s); }
+  } catch(e) {}
+}
+
+async function syncFromCloud() {
+  setSyncIndicator('saving');
+  try {
+    const { data, error } = await supabase
+      .from('newme_data')
+      .select('data')
+      .eq('id', ROW_ID)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    if (data && data.data) {
+      Object.assign(state, data.data);
+      try { localStorage.setItem('newme_state', JSON.stringify(state)); } catch(e) {}
+      // Refresh UI with cloud data
+      buildExpenseGrid();
+      renderTransactions();
+      updateSummary();
+      updateChart();
+      buildDayTabs();
+      renderChecklist();
+    }
+    setSyncIndicator('saved');
+    setTimeout(() => setSyncIndicator('idle'), 2000);
+  } catch(err) {
+    console.warn('Supabase sync failed:', err.message);
+    setSyncIndicator('error');
+  }
 }
 
 init();
