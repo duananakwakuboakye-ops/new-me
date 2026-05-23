@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@100;200;300;400;500;600;700&family=Nunito:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ===================== CSS VARIABLES ===================== */
 :root {
@@ -1216,6 +1217,7 @@ nav {
     <div class="nav-link" data-page="about">About</div>
   </div>
   <div class="nav-actions">
+    <div id="sync-status" style="display:flex;align-items:center;gap:4px;padding:0 8px;white-space:nowrap;">☁️ <span style="color:var(--text3);font-size:12px;font-weight:700;">Cloud sync</span></div>
     <button class="theme-toggle" id="theme-toggle" title="Toggle theme">☀️</button>
   </div>
 </nav>
@@ -1684,16 +1686,78 @@ let state = {
   activeDay: 'Mon/Wed',
 };
 
-// ===================== PERSISTENCE =====================
-function saveData() {
-  try { localStorage.setItem('newme_state', JSON.stringify(state)); } catch(e) {}
+// ===================== SUPABASE =====================
+const SUPABASE_URL = 'https://javfbmpfwoyawjamlsbc.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphdmZibXBmd295YXdqYW1sc2JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDQ4MTUsImV4cCI6MjA5NTEyMDgxNX0.D4DhXQ-xe-t4wBD4BC8G3xZOeKM51JN46XVwrV9wigA';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const ROW_ID = 'main';
+
+let saveTimer = null;
+let syncStatus = 'idle'; // idle | saving | saved | error
+
+function setSyncIndicator(status) {
+  syncStatus = status;
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  const map = {
+    idle:   { icon: '☁️', text: 'Cloud sync', color: 'var(--text3)' },
+    saving: { icon: '⏳', text: 'Saving…',    color: 'var(--warning)' },
+    saved:  { icon: '✅', text: 'Saved',       color: 'var(--success)' },
+    error:  { icon: '⚠️', text: 'Offline',     color: 'var(--danger)'  },
+  };
+  const s = map[status] || map.idle;
+  el.innerHTML = `${s.icon} <span style="color:${s.color};font-size:12px;font-weight:700;">${s.text}</span>`;
 }
 
-function loadData() {
+// ===================== PERSISTENCE =====================
+async function saveData() {
+  // Always write to localStorage as immediate fallback
+  try { localStorage.setItem('newme_state', JSON.stringify(state)); } catch(e) {}
+
+  // Debounce cloud writes — wait 800ms after last change before pushing
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    setSyncIndicator('saving');
+    try {
+      const { error } = await supabase
+        .from('newme_data')
+        .upsert({ id: ROW_ID, data: state, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      setSyncIndicator('saved');
+      setTimeout(() => setSyncIndicator('idle'), 2500);
+    } catch(err) {
+      console.warn('Supabase save failed, data is in localStorage:', err.message);
+      setSyncIndicator('error');
+    }
+  }, 800);
+}
+
+async function loadData() {
+  // 1. Load localStorage immediately so UI isn't blank while fetching
   try {
     const raw = localStorage.getItem('newme_state');
     if (raw) { const s = JSON.parse(raw); Object.assign(state, s); }
   } catch(e) {}
+
+  // 2. Fetch from Supabase — this is the authoritative source
+  try {
+    const { data, error } = await supabase
+      .from('newme_data')
+      .select('data')
+      .eq('id', ROW_ID)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows yet, that's fine
+
+    if (data && data.data) {
+      Object.assign(state, data.data);
+      // Sync back to localStorage so offline fallback is current
+      try { localStorage.setItem('newme_state', JSON.stringify(state)); } catch(e) {}
+    }
+  } catch(err) {
+    console.warn('Supabase load failed, using localStorage:', err.message);
+    setSyncIndicator('error');
+  }
 }
 
 // ===================== THEME =====================
@@ -2057,17 +2121,19 @@ function observeReveals() {
 }
 
 // ===================== INIT =====================
-function init() {
-  loadData();
+async function init() {
   applyTheme();
 
-  // Loader
+  // Loader stays while we fetch cloud data
+  await loadData();
+  applyTheme(); // re-apply after cloud load (theme may have changed)
+
+  // Dismiss loader
   setTimeout(() => {
     document.getElementById('loader').classList.add('fade-out');
-    setTimeout(() => document.getElementById('loader').remove(), 800);
-  }, 2600);
+    setTimeout(() => { const l = document.getElementById('loader'); if(l) l.remove(); }, 800);
+  }, 2400);
 
-  // Wait for page load
   setTimeout(() => {
     buildExpenseGrid();
     renderTransactions();
@@ -2077,15 +2143,13 @@ function init() {
     renderChecklist();
     observeReveals();
 
-    // Init bubble
     const active = document.querySelector('.nav-link.active');
     if (active) positionBubble(active);
 
-    // Trigger home reveals
     document.querySelectorAll('#page-home .reveal').forEach((el, i) => {
       setTimeout(() => el.classList.add('visible'), i * 100 + 200);
     });
-  }, 2700);
+  }, 2500);
 }
 
 init();
